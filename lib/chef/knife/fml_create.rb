@@ -16,12 +16,12 @@
 #
 
 require 'chef/knife'
-require 'chef/mixin/shell_out'
+require 'chef/knife/fml_base'
 
 class Chef
   class Knife
     class FmlCreate < Knife
-      include Chef::Mixin::ShellOut
+      include Knife::FmlBase
 
       deps do
         require 'io/console'
@@ -127,34 +127,37 @@ class Chef
         end
       end
 
-      # quick and dirty password prompt, because I'm cool like that
-      def get_password
-        print "Enter root password for HMC: "
-        STDIN.noecho(&:gets).chomp
-      end
-
       def create_lpar
         Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
+        # Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
           # some background checks
           # check for existing lpar with name
+          ui.info "Searching for existing lpar with name: #{config[:name]}"
           command = "lssyscfg -m #{config[:virtual_server]} -F name -r lpar | grep #{config[:name]}"
           output = run_remote_command(ssh, command)
           unless output.nil?
-            puts "An lpar already exists with the name #{config[:name]}"
+            ui.error "An lpar already exists with the name #{config[:name]}"
             Kernel.exit(1)
           end
+          ui.info "lpar not found, creation imminent"
 
           # find the last vscsi device number
+          ui.info "Looking for next device number in sequence"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"lsdev -type disk -virtual -field name\" | tail -1"
           last_vscsi = run_remote_command(ssh, command)
+          ui.info "Found existing device - #{last_vscsi}"
 
           # use the vscsi number to find the actual physical ID so we can find which vios slot it's in
+          ui.info "Finding vios mapping for device - #{last_vscsi}"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"lsdev -dev #{last_vscsi} -field physloc -fmt \\\":\\\"\""
           last_vscsi_phy_loc = run_remote_command(ssh, command)
           prev_loc = last_vscsi_phy_loc.match('.*-C(\d+)-.*')[1]
+          ui.info "Found vios mapping #{prev_loc}"
           new_virt_loc = prev_loc.to_i + 1
+          ui.info "Will use new mapping #{new_virt_loc}"
 
           # create the new lpar
+          ui.info "Creating new lpar #{config[:name]}"
           command = "mksyscfg -m #{config[:virtual_server]} -r lpar \
 -i \"name=#{config[:name]}, \
 profile_name=#{config[:profile]}, \
@@ -174,88 +177,70 @@ boot_mode=norm, max_virtual_slots=10, \
 \\\"virtual_eth_adapters=3/0/1//0/0\\\", \
 \\\"virtual_scsi_adapters=2/client//#{config[:vios]}/#{new_virt_loc}/1\\\"\""
           output = run_remote_command(ssh, command)
-          unless output.nil?
-            puts "command: " + command
-            puts output.to_s
-          end
-
-          # Add the virtual io server vscsi mapping
-          command = "chhwres -r virtualio -m #{config[:virtual_server]} -o a -p #{config[:vios]} --rsubtype scsi -s #{new_virt_loc} -a \"adapter_type=server, remote_lpar_name=#{config[:name]}, remote_slot_num=2\""
-          output = run_remote_command(ssh, command)
-          unless output.nil?
-            puts "command: " + command
-            puts output.to_s
-          end
-
-          # save the virtual io server profile
-          command = "mksyscfg -r prof -m #{config[:virtual_server]} -o save -p #{config[:vios]} -n `lssyscfg -r lpar -m #{config[:virtual_server]} --filter \"lpar_names=#{config[:vios]}\" -F curr_profile` --force"
-          output = run_remote_command(ssh, command)
-          unless output.nil?
-            puts "command: " + command
-            puts output.to_s
-          end
+          ui.info "Creation Successful"
 
           # now we have to figure out what the hell lpar we just created
+          ui.info "Finding vhost name"
           command = "lssyscfg -m #{config[:virtual_server]} --filter \"lpar_names=#{config[:name]}\" -F lpar_id -r lpar"
           output = run_remote_command(ssh, command)
           # and of course it doesn't match, 0 based vs 1 based counting
           vhost = output.to_i - 1
           vhost_name = "vhost#{vhost.to_s}"
+          ui.info "#{config[:name]} is #{vhost_name}"
+
+          # Add the virtual io server vscsi mapping
+          ui.info "Mapping #{new_virt_loc} between #{config[:vios]} and #{config[:name]}"
+          command = "chhwres -r virtualio -m #{config[:virtual_server]} -o a -p #{config[:vios]} --rsubtype scsi -s #{new_virt_loc} -a \"adapter_type=server, remote_lpar_name=#{config[:name]}, remote_slot_num=2\""
+          output = run_remote_command(ssh, command)
+          ui.info "Mapping Successful"
 
           # make a file backed optical drive
+          ui.info "Creating virtual file backed optical device"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"mkvdev -fbo -vadapter #{vhost_name}\""
           vopt_name = run_remote_command(ssh, command).split(' ')[0]
+          ui.info "Created device #{vopt_name}"
 
           # load the iso
+          ui.info "Loading disk in optical drive"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"loadopt -vtd #{vopt_name} -disk #{config[:disk_name]}\""
           output = run_remote_command(ssh, command)
-          unless output.nil?
-            puts "command: " + command
-            puts output.to_s
-          end
+          ui.info "Loading Successful"
 
           # create logical volume
+          ui.info "Creating logical volume"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"mklv -lv #{config[:name]} rootvg 50G\""
-          output = run_remote_command(ssh, command)
-          unless output.nil?
-            puts "command: " + command
-            puts output.to_s
-          end
+          lv_name = run_remote_command(ssh, command)
+          ui.info "Created logical volume #{lv_name}"
 
           # attach it
+          ui.info "Attaching lv to lpar"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"mkvdev -vdev #{config[:name]} -vadapter #{vhost_name}\""
+          vtscsi_name = run_remote_command(ssh, command).split(' ')[0]
+          ui.info "Attach Successful as #{vtscsi_name}"
+
+          # save the virtual io server profile
+          ui.info "Activating virtual io server profile"
+          command = "mksyscfg -r prof -m #{config[:virtual_server]} -o save -p #{config[:vios]} -n `lssyscfg -r lpar -m #{config[:virtual_server]} --filter \"lpar_names=#{config[:vios]}\" -F curr_profile` --force"
           output = run_remote_command(ssh, command)
-          unless output.nil?
-            puts "command: " + command
-            puts output.to_s
-          end
+          ui.info "Activation Successful"
 
           # smack the lpar a bit so it knows it has new devices
+          ui.info "Give the vios a good kick so it wakes up and looks at the new devices"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"cfgdev\""
-          unless output.nil?
-            puts "command: " + command
-            puts output.to_s
-          end
+          output = run_remote_command(ssh, command)
+          ui.info "Kicking Successful"
 
           # could start it up here, we'll see
-
-        end
-      end
-
-      def run_remote_command(ssh, command)
-        return_val = nil
-        ssh.exec! command do |ch, stream, data|
-          if stream == :stdout
-            return_val = data.chomp
-          else
-            # some exception is in order I think
-            puts "SOMETHING ASPLODE!!!!"
-            puts data.to_s
-            Kernel.exit(1)
+          ui.info "Boot lpar in SMS mode"
+          command = "chsysstate -r lpar -m #{config[:virtual_server]} -o on -f #{config[:profile]} -b sms -n #{config[:name]}"
+          output = run_remote_command(ssh, command)
+          unless output.nil?
+            puts output.to_s
           end
+          ui.info "Boot Successful"
         end
-        return return_val
       end
+
     end
   end
 end
