@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'knife-fml/version'
+require 'knife-lpar/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "knife-fml"
-  spec.version       = Knife::FML::VERSION
+  spec.name          = "knife-lpar"
+  spec.version       = Knife::Lpar::VERSION
   spec.authors       = ["Scott Hain"]
   spec.email         = ["shain@getchef.com"]
-  spec.summary       = %q{Finally Make LPAR}
+  spec.summary       = %q{LPAR creation}
   spec.description   = spec.summary
-  spec.homepage      = "http://github.com/scotthain/knife-fml"
+  spec.homepage      = "http://github.com/opscode/knife-lpar"
   spec.license       = "Apache 2.0"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -25,5 +25,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov', '~> 0.7.1'
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'pry'
 end

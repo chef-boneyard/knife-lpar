@@ -1,5 +1,5 @@
 module Knife
-  module FML
+  module Lpar
     VERSION = "0.0.1"
   end
 end
