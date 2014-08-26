@@ -16,19 +16,19 @@
 #
 
 require 'chef/knife'
-require 'chef/knife/fml_base'
+require 'chef/knife/lpar_base'
 
 class Chef
   class Knife
-    class FmlCreate < Knife
-      include Knife::FmlBase
+    class LparCreate < Knife
+      include Knife::LparBase
 
       deps do
         require 'io/console'
         require 'net/ssh'
       end
 
-      banner "knife fml create SERVER [options]"
+      banner "knife lpar create SERVER [options]"
 
       option :name,
         :short => "-n NAME",

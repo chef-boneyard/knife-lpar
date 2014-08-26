@@ -17,7 +17,7 @@
 
 class Chef
   class Knife
-    module FmlBase
+    module LparBase
 
       # I hate this name but I'm not thinking of anything better right now.
       def print_with_output(message, output=nil)
