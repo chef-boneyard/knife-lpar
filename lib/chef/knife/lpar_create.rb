@@ -112,7 +112,6 @@ class Chef
       #
       def read_and_validate_params
         if @name_args.length < 1
-
           show_usage
           exit 1
         end
