@@ -107,8 +107,7 @@ class Chef
       #
       def run
         read_and_validate_params
-        #TODO - make this more non-hardwired
-#        @password = get_password
+        @password = get_password
         create_lpar
       end
 
@@ -118,6 +117,7 @@ class Chef
       #
       def read_and_validate_params
         if @name_args.length < 1
+          
           show_usage
           exit 1
         end
@@ -128,8 +128,7 @@ class Chef
       end
 
       def create_lpar
-        Net::SSH.start(@name_args[0], 'hscroot', :password => '123Opscode!') do |ssh|
-        # Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
+        Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
           # some background checks
           # check for existing lpar with name
           ui.info "Searching for existing lpar with name: #{config[:name]}"
