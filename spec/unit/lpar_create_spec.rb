@@ -27,6 +27,13 @@ describe Chef::Knife::LparCreate do
   #     c.merge_configs
   #   end
   # end
+  subject(:knife) do
+    Chef::Knife::LparCreate.new(argv).tap do |c|
+      allow(c).to receive(:output).and_return(true)
+      c.parse_options(argv)
+      c.merge_configs
+    end
+  end
 
   describe '#run' do
     # before(:each) do
@@ -37,13 +44,13 @@ describe Chef::Knife::LparCreate do
     #   @knife
     # end
 
-    subject(:knife) do
-      Chef::Knife::LparCreate.new(argv).tap do |c|
-        allow(c).to receive(:output).and_return(true)
-        c.parse_options(argv)
-        c.merge_configs
-      end
-    end
+    # subject(:knife) do
+    #   Chef::Knife::LparCreate.new(argv).tap do |c|
+    #     allow(c).to receive(:output).and_return(true)
+    #     c.parse_options(argv)
+    #     c.merge_configs
+    #   end
+    # end
 
     context 'by default' do
       let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof ] }
@@ -83,52 +90,83 @@ describe Chef::Knife::LparCreate do
     #
     #
     context 'when argv is empty' do
-      let(:argv) { %W[] }
-      let(:knife) do
-        knife = Chef::Knife::LparCreate.new(argv)
-        knife
+      # let(:knife) do
+      #   knife = Chef::Knife::LparCreate.new
+      #   knife
+      # end
+
+      subject(:knife) do
+        Chef::Knife::LparCreate.new(argv).tap do |c|
+          allow(c).to receive(:output).and_return(true)
+          c.parse_options(argv)
+          c.merge_configs
+        end
       end
+
+      let(:argv) { [] }
 
       it 'prints usage and exits' do
         expect(knife).to receive(:read_and_validate_params)
 
         expect(knife).to receive(:show_usage)
         # expect(knife.ui).to receive(:fatal)
-        expect { knife.run }.to raise_error(SystemExit)
+        # expect { knife.run }.to raise_error(SystemExit)
+                expect(knife.run).to receive(:exit).with(false)
+
       end
     end
 
-    # context 'by default' do
-    #   let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof ] }
-    #
-    #   it 'sets defaults' do
-    #     expect(knife).to receive(:read_and_validate_params).and_call_original
-    #     expect(knife).to receive(:get_password)
-    #     expect(knife).to receive(:create_lpar)
-    #     knife.run
-    #     expect(knife.config[:profile]).to eq("fakeprof")
-    #     expect(knife.config[:min_mem]).to eq(1024)
-    #     expect(knife.config[:desired_mem]).to eq(4096)
-    #     expect(knife.config[:max_mem]).to eq(16384)
-    #     expect(knife.config[:min_procs]).to eq(1)
-    #     expect(knife.config[:desired_procs]).to eq(2)
-    #     expect(knife.config[:max_procs]).to eq(4)
-    #     expect(knife.config[:min_proc_units]).to eq(1)
-    #     expect(knife.config[:desired_proc_units]).to eq(2)
-    #     expect(knife.config[:max_proc_units]).to eq(4)
-    #   end
-    # end
-    #
-    # context 'without profile' do
-    #   let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk ] }
-    #
-    #   it 'defaults profile to name' do
-    #     expect(knife).to receive(:read_and_validate_params).and_call_original
-    #     expect(knife).to receive(:get_password)
-    #     expect(knife).to receive(:create_lpar)
-    #     knife.run
-    #     expect(knife.config[:profile]).to eq("fakename")
-    #   end
-    # end
+    context 'by default' do
+      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof ] }
+
+      it 'sets defaults' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:get_password)
+        expect(knife).to receive(:create_lpar)
+        knife.run
+        expect(knife.config[:profile]).to eq("fakeprof")
+        expect(knife.config[:min_mem]).to eq(1024)
+        expect(knife.config[:desired_mem]).to eq(4096)
+        expect(knife.config[:max_mem]).to eq(16384)
+        expect(knife.config[:min_procs]).to eq(1)
+        expect(knife.config[:desired_procs]).to eq(2)
+        expect(knife.config[:max_procs]).to eq(4)
+        expect(knife.config[:min_proc_units]).to eq(1)
+        expect(knife.config[:desired_proc_units]).to eq(2)
+        expect(knife.config[:max_proc_units]).to eq(4)
+      end
+    end
+
+    context 'without profile' do
+      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk ] }
+
+      it 'defaults profile to name' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:get_password)
+        expect(knife).to receive(:create_lpar)
+        knife.run
+        expect(knife.config[:profile]).to eq("fakename")
+      end
+    end
+  end
+
+  context '#create_lpar' do
+    before(:each) do
+      # ssh = Net::SSH.new
+      # ssh.stub(:start)
+      Chef::Knife::LparCreate.load_deps
+    end
+
+    context 'with defaults' do
+      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof] }
+
+      it 'defaults profile to name' do
+        expect(knife).to receive(:read_and_validate_params)
+        expect(knife).to receive(:get_password)
+        expect(knife).to receive(:create_lpar).and_call_original
+        knife.run
+        expect()
+      end
+    end
   end
 end
