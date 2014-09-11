@@ -106,12 +106,11 @@ describe Chef::Knife::LparCreate do
       let(:argv) { [] }
 
       it 'prints usage and exits' do
-        expect(knife).to receive(:read_and_validate_params)
-
+        expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         # expect(knife.ui).to receive(:fatal)
-        # expect { knife.run }.to raise_error(SystemExit)
-                expect(knife.run).to receive(:exit).with(false)
+        expect { knife.run }.to raise_error(SystemExit)
+        #        expect(knife.run).to receive(:exit).with(false)
 
       end
     end
@@ -152,20 +151,68 @@ describe Chef::Knife::LparCreate do
 
   context '#create_lpar' do
     before(:each) do
-      # ssh = Net::SSH.new
-      # ssh.stub(:start)
       Chef::Knife::LparCreate.load_deps
+      @session = double(Net::SSH)
+      allow(Net::SSH).to receive(:start).with("serverurl", "hscroot", :password => "testpass").and_yield(@session)
+      allow(Net::SSH).to receive(:exec!)
+    end
+
+    context 'with an existing lpar name' do
+      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof] }
+
+      it 'returns with an error since the lpar already exists' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:get_password).and_return("testpass")
+        expect(knife).to receive(:create_lpar).and_call_original
+
+        expect(knife).to receive(:run_remote_command).with(@session, "lssyscfg -m fakevirt -F name -r lpar | grep fakename").and_return("fakename")
+        expect(knife.ui).to receive(:fatal)
+        expect { knife.run }.to raise_error(SystemExit)
+      end
     end
 
     context 'with defaults' do
       let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof] }
 
-      it 'defaults profile to name' do
-        expect(knife).to receive(:read_and_validate_params)
-        expect(knife).to receive(:get_password)
+      it 'does things' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:get_password).and_return("testpass")
         expect(knife).to receive(:create_lpar).and_call_original
+
+        expect(knife).to receive(:run_remote_command).with(@session, "lssyscfg -m fakevirt -F name -r lpar | grep fakename").and_return(nil)
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"lsdev -type disk -virtual -field name\" | tail -1").and_return("fakevscsi")
+
+#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"lsdev -dev  -field physloc -fmt \\\":\\\"\"")
+#         expect(session).to receive(:exec!).with("mksyscfg -m fakevirt -r lpar \
+# -i \"name=fakename, \
+# profile_name=fakeprof, \
+# lpar_env=aixlinux, \
+# min_mem=1024, \
+# desired_mem=2048, \
+# max_mem=16384, \
+# proc_mode=shared, \
+# min_procs=1, \
+# desired_procs=2, \
+# max_procs=4, \
+# min_proc_units=1, \
+# desired_proc_units=2, \
+# max_proc_units=3, \
+# sharing_mode=uncap, uncap_weight=128, \
+# boot_mode=norm, max_virtual_slots=10, \
+# \\\"virtual_eth_adapters=3/0/1//0/0\\\", \
+# \\\"virtual_scsi_adapters=2/client//fakevios/3/1\\\"\"")
+#         expect(session).to receive(:exec!).with("lssyscfg -m fakevirt --filter \"lpar_names=fakename\" -F lpar_id -r lpar")
+#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -fbo -vadapter vthost01\"").and_yield("fakevopt01")
+#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"loadopt -vtd fakevopt01 -disk fakedisk\"")
+#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"mklv -lv fakename rootvg 50G\"")
+#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -vdev fakename -vadapter vthost01\"")
+#         expect(session).to receive(:exec!).with("mksyscfg -r prof -m fakevirt -o save -p fakevios -n `lssyscfg -r lpar -m fakevirt --filter \"lpar_names=fakevios\" -F curr_profile` --force")
+#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"cfgdev\"")
+#         expect(session).to receive(:exec!).with("chsysstate -r lpar -m fakevirt -o on -f fakeprof -b sms -n fakename")
+
         knife.run
-        expect()
+
+
       end
     end
   end

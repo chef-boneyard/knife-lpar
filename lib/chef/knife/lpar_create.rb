@@ -33,8 +33,7 @@ class Chef
       option :name,
         :short => "-n NAME",
         :long => "--name",
-        :description => "LPAR Name",
-        :required => true
+        :description => "LPAR Name"
 
       option :profile,
         :short => "-p PROFILE",
@@ -44,13 +43,11 @@ class Chef
       option :virtual_server,
         :short => "-v SERVER",
         :long => "--virtual-server",
-        :description => "Virtual Server Name",
-        :required => true
+        :description => "Virtual Server Name"
 
       option :vios,
         :long => "--vios NAME",
-        :description => "Virtual I/O Server LPAR Name",
-        :required => true
+        :description => "Virtual I/O Server LPAR Name"
 
       option :min_mem,
         :long => "--min-mem MEM",
@@ -97,10 +94,13 @@ class Chef
         :description => "Max number of processor units (default 4)",
         :default => 4
 
+      option :help,
+        :long => "--help",
+        :description => "Prints this menu"
+
       option :disk_name,
         :long => "--disk-name DISK",
-        :description => "Disk image name (e.g. AIX_6_1_vol1)",
-        :required => true
+        :description => "Disk image name (e.g. AIX_6_1_vol1)"
 
       #
       # Run the plugin
@@ -117,7 +117,6 @@ class Chef
       #
       def read_and_validate_params
         if @name_args.length < 1
-          
           show_usage
           exit 1
         end
@@ -135,8 +134,8 @@ class Chef
           command = "lssyscfg -m #{config[:virtual_server]} -F name -r lpar | grep #{config[:name]}"
           output = run_remote_command(ssh, command)
           unless output.nil?
-            ui.error "An lpar already exists with the name #{config[:name]}"
-            Kernel.exit(1)
+            ui.fatal "An lpar already exists with the name #{config[:name]}"
+            exit 1
           end
           ui.info "lpar not found, creation imminent"
 
