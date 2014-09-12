@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "chef", "~> 11.0"
   spec.add_dependency "net-ssh", "~> 2.6"
 
-  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| spec.add_development_dependency gem, '~> 2.14.0' }
+  %w(rspec-core rspec-expectations rspec-mocks).each { |gem| spec.add_development_dependency gem }
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'pry'
