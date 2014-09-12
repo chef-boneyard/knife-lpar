@@ -180,39 +180,38 @@ describe Chef::Knife::LparCreate do
         expect(knife).to receive(:create_lpar).and_call_original
 
         expect(knife).to receive(:run_remote_command).with(@session, "lssyscfg -m fakevirt -F name -r lpar | grep fakename").and_return(nil)
-        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"lsdev -type disk -virtual -field name\" | tail -1").and_return("fakevscsi")
-
-#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"lsdev -dev  -field physloc -fmt \\\":\\\"\"")
-#         expect(session).to receive(:exec!).with("mksyscfg -m fakevirt -r lpar \
-# -i \"name=fakename, \
-# profile_name=fakeprof, \
-# lpar_env=aixlinux, \
-# min_mem=1024, \
-# desired_mem=2048, \
-# max_mem=16384, \
-# proc_mode=shared, \
-# min_procs=1, \
-# desired_procs=2, \
-# max_procs=4, \
-# min_proc_units=1, \
-# desired_proc_units=2, \
-# max_proc_units=3, \
-# sharing_mode=uncap, uncap_weight=128, \
-# boot_mode=norm, max_virtual_slots=10, \
-# \\\"virtual_eth_adapters=3/0/1//0/0\\\", \
-# \\\"virtual_scsi_adapters=2/client//fakevios/3/1\\\"\"")
-#         expect(session).to receive(:exec!).with("lssyscfg -m fakevirt --filter \"lpar_names=fakename\" -F lpar_id -r lpar")
-#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -fbo -vadapter vthost01\"").and_yield("fakevopt01")
-#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"loadopt -vtd fakevopt01 -disk fakedisk\"")
-#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"mklv -lv fakename rootvg 50G\"")
-#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -vdev fakename -vadapter vthost01\"")
-#         expect(session).to receive(:exec!).with("mksyscfg -r prof -m fakevirt -o save -p fakevios -n `lssyscfg -r lpar -m fakevirt --filter \"lpar_names=fakevios\" -F curr_profile` --force")
-#         expect(session).to receive(:exec!).with("viosvrcmd -m fakevirt -p fakevios -c \"cfgdev\"")
-#         expect(session).to receive(:exec!).with("chsysstate -r lpar -m fakevirt -o on -f fakeprof -b sms -n fakename")
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"lsdev -type disk -virtual -field name\" | tail -1").and_return("fakevscsi1")
+        # this is real type of data it returns, deal with it :)
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"lsdev -dev fakevscsi1 -field physloc -fmt \\\":\\\"\"").and_return("U8231.E1D.06A398T-V2-C108-L1")
+        expect(knife).to receive(:run_remote_command).with(@session, "mksyscfg -m fakevirt -r lpar \
+-i \"name=fakename, \
+profile_name=fakeprof, \
+lpar_env=aixlinux, \
+min_mem=1024, \
+desired_mem=4096, \
+max_mem=16384, \
+proc_mode=shared, \
+min_procs=1, \
+desired_procs=2, \
+max_procs=4, \
+min_proc_units=1, \
+desired_proc_units=2, \
+max_proc_units=4, \
+sharing_mode=uncap, uncap_weight=128, \
+boot_mode=norm, max_virtual_slots=10, \
+\\\"virtual_eth_adapters=3/0/1//0/0\\\", \
+\\\"virtual_scsi_adapters=2/client//fakevios/109/1\\\"\"")
+         expect(knife).to receive(:run_remote_command).with(@session, "lssyscfg -m fakevirt --filter \"lpar_names=fakename\" -F lpar_id -r lpar").and_return("5")
+         expect(knife).to receive(:run_remote_command).with(@session, "chhwres -r virtualio -m fakevirt -o a -p fakevios --rsubtype scsi -s 109 -a \"adapter_type=server, remote_lpar_name=fakename, remote_slot_num=2\"")
+         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -fbo -vadapter vhost4\"").and_return("vadapter3")
+         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"loadopt -vtd vadapter3 -disk fakedisk\"")
+         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mklv -lv fakename rootvg 50G\"")
+         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -vdev fakename -vadapter vhost4\"").and_return("fakevtopt3 Virtual Optical Device")
+         expect(knife).to receive(:run_remote_command).with(@session, "mksyscfg -r prof -m fakevirt -o save -p fakevios -n `lssyscfg -r lpar -m fakevirt --filter \"lpar_names=fakevios\" -F curr_profile` --force")
+         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"cfgdev\"")
+         expect(knife).to receive(:run_remote_command).with(@session, "chsysstate -r lpar -m fakevirt -o on -f fakeprof -b sms -n fakename")
 
         knife.run
-
-
       end
     end
   end
