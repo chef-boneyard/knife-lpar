@@ -21,14 +21,9 @@ require 'chef/knife/lpar_base'
 class Chef
   class Knife
     class LparCreate < Knife
-      include Knife::LparBase
+      include Chef::Knife::LparBase
 
-      deps do
-        require 'io/console'
-        require 'net/ssh'
-      end
-
-      banner "knife lpar create SERVER [options]"
+      banner "knife lpar create HMC [options]"
 
       option :name,
         :short => "-n NAME",
@@ -117,6 +112,14 @@ class Chef
       #
       def read_and_validate_params
         if @name_args.length < 1
+          show_usage
+          exit 1
+        end
+
+        if config[:name].nil? ||
+            config[:vios].nil? ||
+            config[:virtual_server].nil? ||
+            config[:disk_name].nil?
           show_usage
           exit 1
         end
@@ -233,7 +236,7 @@ boot_mode=norm, max_virtual_slots=10, \
           command = "chsysstate -r lpar -m #{config[:virtual_server]} -o on -f #{config[:profile]} -b sms -n #{config[:name]}"
           output = run_remote_command(ssh, command)
           unless output.nil?
-            puts output.to_s
+            ui.info output.to_s
           end
           ui.info "Boot Successful"
         end

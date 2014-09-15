@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+require 'io/console'
+require 'net/ssh'
+
 class Chef
   class Knife
     module LparBase
