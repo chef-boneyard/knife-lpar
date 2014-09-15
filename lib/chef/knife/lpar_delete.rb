@@ -21,31 +21,27 @@ require 'chef/knife/lpar_base'
 class Chef
   class Knife
     class LparDelete < Knife
-      include Knife::LparBase
+      include Chef::Knife::LparBase
 
-      deps do
-        require 'io/console'
-        require 'net/ssh'
-      end
-
-      banner "knife lpar delete SERVER [options]"
+      banner "knife lpar delete HMC [options]"
 
       option :name,
         :short => "-n NAME",
         :long => "--name",
-        :description => "LPAR Name",
-        :required => true
+        :description => "LPAR Name"
 
       option :virtual_server,
         :short => "-v SERVER",
         :long => "--virtual-server",
-        :description => "Virtual Server Name",
-        :required => true
+        :description => "Virtual Server Name"
 
       option :vios,
         :long => "--vios NAME",
-        :description => "Virtual I/O Server LPAR Name",
-        :required => true
+        :description => "Virtual I/O Server LPAR Name"
+
+      option :help,
+        :long => "--help",
+        :description => "Prints this menu"
 
       #
       # Run the plugin
@@ -66,6 +62,13 @@ class Chef
           show_usage
           exit 1
         end
+
+        if config[:name].nil? ||
+            config[:vios].nil? ||
+            config[:virtual_server].nil?
+          show_usage
+          exit 1
+        end
       end
 
       def delete_lpar
@@ -77,9 +80,8 @@ class Chef
           ui.info "Verifying #{config[:name]} exists"
           command = "lssyscfg -m #{config[:virtual_server]} -F name -r lpar --filter \"lpar_names=#{config[:name]}\""
           output = run_remote_command(ssh, command)
-          # weird hacky crap!
           unless output.eql? config[:name]
-            ui.error output
+            ui.fatal output
             Kernel.exit(1)
           end
 
@@ -87,9 +89,8 @@ class Chef
           ui.info "Verifying #{config[:name]} is not running"
           command = "lssyscfg -m #{config[:virtual_server]} -F state -r lpar --filter \"lpar_names=#{config[:name]}\""
           output = run_remote_command(ssh, command)
-          # weird hacky crap!
           unless output.eql? "Not Activated"
-            ui.error output
+            ui.fatal output
             Kernel.exit(1)
           end
 

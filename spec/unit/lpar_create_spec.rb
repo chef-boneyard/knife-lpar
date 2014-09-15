@@ -20,13 +20,6 @@ require 'chef/knife/lpar_create.rb'
 
 describe Chef::Knife::LparCreate do
 
-  # subject(:knife) do
-  #   Chef::Knife::LparCreate.new(argv).tap do |c|
-  #     allow(c).to receive(:output).and_return(true)
-  #     c.parse_options(argv)
-  #     c.merge_configs
-  #   end
-  # end
   subject(:knife) do
     Chef::Knife::LparCreate.new(argv).tap do |c|
       allow(c).to receive(:output).and_return(true)
@@ -36,21 +29,6 @@ describe Chef::Knife::LparCreate do
   end
 
   describe '#run' do
-    # before(:each) do
-    #   @knife = Chef::Knife::LparCreate.new
-    #   # @knife.stub(:read_and_validate_params)
-    #   # @knife.stub(:get_password)
-    #   # @knife.stub(:create_lpar)
-    #   @knife
-    # end
-
-    # subject(:knife) do
-    #   Chef::Knife::LparCreate.new(argv).tap do |c|
-    #     allow(c).to receive(:output).and_return(true)
-    #     c.parse_options(argv)
-    #     c.merge_configs
-    #   end
-    # end
 
     context 'by default' do
       let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof ] }
@@ -62,56 +40,58 @@ describe Chef::Knife::LparCreate do
         knife.run
       end
     end
+
   end
 
   describe '#read_and_validate_params' do
 
-    # subject(:knife) do
-    #   Chef::Knife::LparCreate.new(argv).tap do |c|
-    #     # allow(c).to receive(:output).and_return(true)
-    #     # c.parse_options(argv)
-    #     # c.merge_configs
-    #   end
-    # end
-
-    # before(:each) do
-    #   expect(knife.config[:name]).to eq("fakename")
-    #   expect(knife.config[:virtual_server]).to eq("fakevirt")
-    #   expect(knife.config[:vios]).to eq("fakevios")
-    #   expect(knife.config[:disk_name]).to eq("fakedisk")
-    # end
-
-    # before(:each) do
-    #   @knife = Chef::Knife::LparCreate.new
-    #   @knife.stub(:read_and_validate_params)
-    #   @knife.stub(:get_password)
-    #   @knife.stub(:create_lpar)
-    # end
-    #
-    #
     context 'when argv is empty' do
-      # let(:knife) do
-      #   knife = Chef::Knife::LparCreate.new
-      #   knife
-      # end
-
-      subject(:knife) do
-        Chef::Knife::LparCreate.new(argv).tap do |c|
-          allow(c).to receive(:output).and_return(true)
-          c.parse_options(argv)
-          c.merge_configs
-        end
-      end
-
       let(:argv) { [] }
 
       it 'prints usage and exits' do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
-        # expect(knife.ui).to receive(:fatal)
         expect { knife.run }.to raise_error(SystemExit)
-        #        expect(knife.run).to receive(:exit).with(false)
+      end
+    end
 
+    context 'when the name parameter is missing' do
+      let(:argv) { %w[ create serverurl --vios fakevios --virtual-server fakevirt --disk fakedisk ] }
+
+      it 'prints usage and exits' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:show_usage)
+        expect { knife.run }.to raise_error(SystemExit)
+      end
+    end
+
+    context 'when the vios parameter is missing' do
+      let(:argv) { %w[ create serverurl -n fakename --virtual-server fakevirt --disk fakedisk ] }
+
+      it 'prints usage and exits' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:show_usage)
+        expect { knife.run }.to raise_error(SystemExit)
+      end
+    end
+
+    context 'when the virtual-server parameter is missing' do
+      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --disk fakedisk ] }
+
+      it 'prints usage and exits' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:show_usage)
+        expect { knife.run }.to raise_error(SystemExit)
+      end
+    end
+
+    context 'when the disk parameter is missing' do
+      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt ] }
+
+      it 'prints usage and exits' do
+        expect(knife).to receive(:read_and_validate_params).and_call_original
+        expect(knife).to receive(:show_usage)
+        expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
@@ -154,7 +134,6 @@ describe Chef::Knife::LparCreate do
       Chef::Knife::LparCreate.load_deps
       @session = double(Net::SSH)
       allow(Net::SSH).to receive(:start).with("serverurl", "hscroot", :password => "testpass").and_yield(@session)
-      allow(Net::SSH).to receive(:exec!)
     end
 
     context 'with an existing lpar name' do
