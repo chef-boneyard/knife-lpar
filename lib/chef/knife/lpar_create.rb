@@ -28,8 +28,7 @@ class Chef
       option :name,
         :short => "-n NAME",
         :long => "--name",
-        :description => "LPAR Name",
-        :required => true
+        :description => "LPAR Name"
 
       option :profile,
         :short => "-p PROFILE",
@@ -39,13 +38,11 @@ class Chef
       option :virtual_server,
         :short => "-v SERVER",
         :long => "--virtual-server",
-        :description => "Virtual Server Name",
-        :required => true
+        :description => "Virtual Server Name"
 
       option :vios,
         :long => "--vios NAME",
-        :description => "Virtual I/O Server LPAR Name",
-        :required => true
+        :description => "Virtual I/O Server LPAR Name"
 
       option :min_mem,
         :long => "--min-mem MEM",
@@ -92,18 +89,20 @@ class Chef
         :description => "Max number of processor units (default 4)",
         :default => 4
 
+      option :help,
+        :long => "--help",
+        :description => "Prints this menu"
+
       option :disk_name,
         :long => "--disk-name DISK",
-        :description => "Disk image name (e.g. AIX_6_1_vol1)",
-        :required => true
+        :description => "Disk image name (e.g. AIX_6_1_vol1)"
 
       #
       # Run the plugin
       #
       def run
         read_and_validate_params
-        #TODO - make this more non-hardwired
-#        @password = get_password
+        @password = get_password
         create_lpar
       end
 
@@ -131,16 +130,15 @@ class Chef
       end
 
       def create_lpar
-        Net::SSH.start(@name_args[0], 'hscroot', :password => '123Opscode!') do |ssh|
-        # Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
+        Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
           # some background checks
           # check for existing lpar with name
           ui.info "Searching for existing lpar with name: #{config[:name]}"
           command = "lssyscfg -m #{config[:virtual_server]} -F name -r lpar | grep #{config[:name]}"
           output = run_remote_command(ssh, command)
           unless output.nil?
-            ui.error "An lpar already exists with the name #{config[:name]}"
-            Kernel.exit(1)
+            ui.fatal "An lpar already exists with the name #{config[:name]}"
+            exit 1
           end
           ui.info "lpar not found, creation imminent"
 
