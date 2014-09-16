@@ -61,7 +61,7 @@ class Chef
 
       option :min_procs,
         :long => "--min-procs PROCS",
-        :description => "Minimum number of Processors(default 1)",
+        :description => "Minimum number of Processors (default 1)",
         :default => 1
 
       option :desired_procs,
