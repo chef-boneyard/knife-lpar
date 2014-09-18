@@ -1,6 +1,6 @@
 # Knife Lpar
 
-This is the official Chef plugin for managing AIX lightweight partitions (LPAR).
+This is the official Chef plugin for managing AIX logical partitions (LPAR).
 This plugin gives knife the ability to initialize and start LPARs.
 
 For more information about LPARs and terminology, see the following:
