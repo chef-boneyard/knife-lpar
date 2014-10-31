@@ -1,7 +1,9 @@
-# Knife Lpar
+# Logical Partitions Plugin for Knife
 
-This is the official Chef plugin for managing AIX logical partitions (LPAR).
-This plugin gives knife the ability to initialize and start LPARs.
+This is the official Chef plugin for managing POWER architecture
+logical partitions (LPAR).
+This plugin gives knife the ability to initialize, start and 
+destroy LPARs.
 
 For more information about LPARs and terminology, see the following:
 http://www.redbooks.ibm.com/abstracts/sg247491.html?Open
@@ -11,8 +13,11 @@ http://www.redbooks.ibm.com/abstracts/sg247491.html?Open
 ## Build Locally
 If you would like to build the gem from source locally, please clone this
 repository on to your local machine and build the gem locally.
+
+```
     $ bundle install
     $ bundle exec gem install
+```
 
 ## Subcommands
 This plugin provides the following Knife subcommands. Specific command options
@@ -89,6 +94,7 @@ Knife-Lpar - a Knife plugin for LPARs
 
 Author:: Scott Hain (<shain@getchef.com>)  
 
+```text
 Copyright:: Copyright (c) 2014 Chef Software, Inc.  
 License:: Apache License, Version 2.0
 
@@ -103,3 +109,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```

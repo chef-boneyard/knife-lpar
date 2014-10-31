@@ -226,10 +226,10 @@ boot_mode=norm, max_virtual_slots=10, \
           ui.info "Activation Successful"
 
           # smack the lpar a bit so it knows it has new devices
-          ui.info "Give the vios a good kick so it wakes up and looks at the new devices"
+          ui.info "Reload virtual io server to re-read devices"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"cfgdev\""
           output = run_remote_command(ssh, command)
-          ui.info "Kicking Successful"
+          ui.info "Reload Successful"
 
           # could start it up here, we'll see
           ui.info "Boot lpar in SMS mode"

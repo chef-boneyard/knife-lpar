@@ -38,9 +38,9 @@ class Chef
             return_val = data.chomp
           else
             # some exception is in order I think
-            puts "SOMETHING ASPLODE!!!!"
-            puts data.to_s
-            Kernel.exit(1)
+            ui.error "Something went wrong:"
+            ui.error data.to_s
+            exit 1
           end
         end
         return return_val
