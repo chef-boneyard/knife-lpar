@@ -2,11 +2,15 @@
 
 This is the official Chef plugin for managing POWER architecture
 logical partitions (LPAR).
+
 This plugin gives knife the ability to initialize, start and 
 destroy LPARs.
 
 For more information about LPARs and terminology, see the following:
 http://www.redbooks.ibm.com/abstracts/sg247491.html?Open
+
+WARNING: This code is currently a research project, experimental
+and provided without warranty or support!
 
 # Installation
 
