@@ -88,6 +88,15 @@ This requires the LPAR to be powered off.
   * `--virtual-server`:
     The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
 
+## knife lpar list HMC (options)
+Lists all LPARs known on a virtual server.
+
+*Required*
+  * `HMC`:
+    The name or IP of the Hardware Management Console (example: `hmc01.myurl.com`)
+  * `--virtual-server`:
+    The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
+
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md)
 
