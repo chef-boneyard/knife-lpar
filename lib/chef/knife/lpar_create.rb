@@ -180,7 +180,7 @@ boot_mode=norm, max_virtual_slots=10, \
           output = run_remote_command(ssh, command)
           ui.info "Creation Successful"
 
-          # now we have to figure out what the hell lpar we just created
+          # now we have to figure out what LPAR we just created
           ui.info "Finding vhost name"
           command = "lssyscfg -m #{config[:virtual_server]} --filter \"lpar_names=#{config[:name]}\" -F lpar_id -r lpar"
           output = run_remote_command(ssh, command)
@@ -225,7 +225,7 @@ boot_mode=norm, max_virtual_slots=10, \
           output = run_remote_command(ssh, command)
           ui.info "Activation Successful"
 
-          # smack the lpar a bit so it knows it has new devices
+          # reload the lpar so it knows it has new devices
           ui.info "Reload virtual io server to re-read devices"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"cfgdev\""
           output = run_remote_command(ssh, command)
