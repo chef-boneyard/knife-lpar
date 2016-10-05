@@ -15,16 +15,16 @@
 # limitations under the License.
 #
 
-require 'io/console'
-require 'net/ssh'
+require "io/console"
+require "net/ssh"
 
 class Chef
   class Knife
     module LparBase
 
       # I hate this name but I'm not thinking of anything better right now.
-      def print_with_output(message, output=nil)
-        if output.nil? or output.empty?
+      def print_with_output(message, output = nil)
+        if output.nil? || output.empty?
           ui.info message
         else
           ui.info message + " - " + output

@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/lpar_create.rb'
+require "spec_helper"
+require "chef/knife/lpar_create.rb"
 
 describe Chef::Knife::LparCreate do
 
@@ -28,12 +28,12 @@ describe Chef::Knife::LparCreate do
     end
   end
 
-  describe '#run' do
+  describe "#run" do
 
-    context 'by default' do
-      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof ] }
+    context "by default" do
+      let(:argv) { %w{ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof } }
 
-      it 'parses argv, gets password, and creates lpar' do
+      it "parses argv, gets password, and creates lpar" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password)
         expect(knife).to receive(:create_lpar)
@@ -43,62 +43,62 @@ describe Chef::Knife::LparCreate do
 
   end
 
-  describe '#read_and_validate_params' do
+  describe "#read_and_validate_params" do
 
-    context 'when argv is empty' do
+    context "when argv is empty" do
       let(:argv) { [] }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the name parameter is missing' do
-      let(:argv) { %w[ create serverurl --vios fakevios --virtual-server fakevirt --disk fakedisk ] }
+    context "when the name parameter is missing" do
+      let(:argv) { %w{ create serverurl --vios fakevios --virtual-server fakevirt --disk fakedisk } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the vios parameter is missing' do
-      let(:argv) { %w[ create serverurl -n fakename --virtual-server fakevirt --disk fakedisk ] }
+    context "when the vios parameter is missing" do
+      let(:argv) { %w{ create serverurl -n fakename --virtual-server fakevirt --disk fakedisk } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the virtual-server parameter is missing' do
-      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --disk fakedisk ] }
+    context "when the virtual-server parameter is missing" do
+      let(:argv) { %w{ create serverurl -n fakename --vios fakevios --disk fakedisk } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the disk parameter is missing' do
-      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt ] }
+    context "when the disk parameter is missing" do
+      let(:argv) { %w{ create serverurl -n fakename --vios fakevios --virtual-server fakevirt } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'by default' do
-      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof ] }
+    context "by default" do
+      let(:argv) { %w{ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof } }
 
-      it 'sets defaults' do
+      it "sets defaults" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password)
         expect(knife).to receive(:create_lpar)
@@ -116,10 +116,10 @@ describe Chef::Knife::LparCreate do
       end
     end
 
-    context 'without profile' do
-      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk ] }
+    context "without profile" do
+      let(:argv) { %w{ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk } }
 
-      it 'defaults profile to name' do
+      it "defaults profile to name" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password)
         expect(knife).to receive(:create_lpar)
@@ -129,17 +129,17 @@ describe Chef::Knife::LparCreate do
     end
   end
 
-  context '#create_lpar' do
+  context "#create_lpar" do
     before(:each) do
       Chef::Knife::LparCreate.load_deps
       @session = double(Net::SSH)
       allow(Net::SSH).to receive(:start).with("serverurl", "hscroot", :password => "testpass").and_yield(@session)
     end
 
-    context 'with an existing lpar name' do
-      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof] }
+    context "with an existing lpar name" do
+      let(:argv) { %w{ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof} }
 
-      it 'returns with an error since the lpar already exists' do
+      it "returns with an error since the lpar already exists" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password).and_return("testpass")
         expect(knife).to receive(:create_lpar).and_call_original
@@ -150,10 +150,10 @@ describe Chef::Knife::LparCreate do
       end
     end
 
-    context 'with defaults' do
-      let(:argv) { %w[ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof] }
+    context "with defaults" do
+      let(:argv) { %w{ create serverurl -n fakename --vios fakevios --virtual-server fakevirt --disk fakedisk -p fakeprof} }
 
-      it 'does things' do
+      it "does things" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password).and_return("testpass")
         expect(knife).to receive(:create_lpar).and_call_original
@@ -180,15 +180,15 @@ sharing_mode=uncap, uncap_weight=128, \
 boot_mode=norm, max_virtual_slots=10, \
 \\\"virtual_eth_adapters=3/0/1//0/0\\\", \
 \\\"virtual_scsi_adapters=2/client//fakevios/109/1\\\"\"")
-         expect(knife).to receive(:run_remote_command).with(@session, "lssyscfg -m fakevirt --filter \"lpar_names=fakename\" -F lpar_id -r lpar").and_return("5")
-         expect(knife).to receive(:run_remote_command).with(@session, "chhwres -r virtualio -m fakevirt -o a -p fakevios --rsubtype scsi -s 109 -a \"adapter_type=server, remote_lpar_name=fakename, remote_slot_num=2\"")
-         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -fbo -vadapter vhost4\"").and_return("vadapter3")
-         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"loadopt -vtd vadapter3 -disk fakedisk\"")
-         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mklv -lv fakename rootvg 50G\"")
-         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -vdev fakename -vadapter vhost4\"").and_return("fakevtopt3 Virtual Optical Device")
-         expect(knife).to receive(:run_remote_command).with(@session, "mksyscfg -r prof -m fakevirt -o save -p fakevios -n `lssyscfg -r lpar -m fakevirt --filter \"lpar_names=fakevios\" -F curr_profile` --force")
-         expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"cfgdev\"")
-         expect(knife).to receive(:run_remote_command).with(@session, "chsysstate -r lpar -m fakevirt -o on -f fakeprof -b sms -n fakename")
+        expect(knife).to receive(:run_remote_command).with(@session, "lssyscfg -m fakevirt --filter \"lpar_names=fakename\" -F lpar_id -r lpar").and_return("5")
+        expect(knife).to receive(:run_remote_command).with(@session, "chhwres -r virtualio -m fakevirt -o a -p fakevios --rsubtype scsi -s 109 -a \"adapter_type=server, remote_lpar_name=fakename, remote_slot_num=2\"")
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -fbo -vadapter vhost4\"").and_return("vadapter3")
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"loadopt -vtd vadapter3 -disk fakedisk\"")
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mklv -lv fakename rootvg 50G\"")
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"mkvdev -vdev fakename -vadapter vhost4\"").and_return("fakevtopt3 Virtual Optical Device")
+        expect(knife).to receive(:run_remote_command).with(@session, "mksyscfg -r prof -m fakevirt -o save -p fakevios -n `lssyscfg -r lpar -m fakevirt --filter \"lpar_names=fakevios\" -F curr_profile` --force")
+        expect(knife).to receive(:run_remote_command).with(@session, "viosvrcmd -m fakevirt -p fakevios -c \"cfgdev\"")
+        expect(knife).to receive(:run_remote_command).with(@session, "chsysstate -r lpar -m fakevirt -o on -f fakeprof -b sms -n fakename")
 
         knife.run
       end

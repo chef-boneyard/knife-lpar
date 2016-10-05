@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/lpar_base'
+require "chef/knife"
+require "chef/knife/lpar_base"
 
 class Chef
   class Knife
@@ -130,7 +130,7 @@ class Chef
       end
 
       def create_lpar
-        Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
+        Net::SSH.start(@name_args[0], "hscroot", :password => @password) do |ssh|
           # some background checks
           # check for existing lpar with name
           ui.info "Searching for existing lpar with name: #{config[:name]}"
@@ -186,7 +186,7 @@ boot_mode=norm, max_virtual_slots=10, \
           output = run_remote_command(ssh, command)
           # and of course it doesn't match, 0 based vs 1 based counting
           vhost = output.to_i - 1
-          vhost_name = "vhost#{vhost.to_s}"
+          vhost_name = "vhost#{vhost}"
           ui.info "#{config[:name]} is #{vhost_name}"
 
           # Add the virtual io server vscsi mapping
@@ -198,7 +198,7 @@ boot_mode=norm, max_virtual_slots=10, \
           # make a file backed optical drive
           ui.info "Creating virtual file backed optical device"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"mkvdev -fbo -vadapter #{vhost_name}\""
-          vopt_name = run_remote_command(ssh, command).split(' ')[0]
+          vopt_name = run_remote_command(ssh, command).split(" ")[0]
           ui.info "Created device #{vopt_name}"
 
           # load the iso
@@ -216,7 +216,7 @@ boot_mode=norm, max_virtual_slots=10, \
           # attach it
           ui.info "Attaching lv to lpar"
           command = "viosvrcmd -m #{config[:virtual_server]} -p #{config[:vios]} -c \"mkvdev -vdev #{config[:name]} -vadapter #{vhost_name}\""
-          vtscsi_name = run_remote_command(ssh, command).split(' ')[0]
+          vtscsi_name = run_remote_command(ssh, command).split(" ")[0]
           ui.info "Attach Successful as #{vtscsi_name}"
 
           # save the virtual io server profile

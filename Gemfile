@@ -1,6 +1,6 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-# Specify your gem's dependencies in knife-container.gemspec
+# Specify your gem's dependencies in knife-lpar.gemspec
 gemspec
 
 gem "chefstyle"

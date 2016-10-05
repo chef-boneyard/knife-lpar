@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/lpar_base'
+require "chef/knife"
+require "chef/knife/lpar_base"
 
 class Chef
   class Knife
@@ -71,7 +71,7 @@ class Chef
       end
 
       def delete_lpar
-        Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
+        Net::SSH.start(@name_args[0], "hscroot", :password => @password) do |ssh|
           # some background checks
 
           # check for existing lpar with name
@@ -98,7 +98,7 @@ class Chef
           output = run_remote_command(ssh, command)
           # and of course it doesn't match, 0 based vs 1 based counting
           vhost = output.to_i - 1
-          vhost_name = "vhost#{vhost.to_s}"
+          vhost_name = "vhost#{vhost}"
           print_with_output("Found host id of #{output} - mapping to #{vhost_name}", nil)
 
           # mapping for the drive

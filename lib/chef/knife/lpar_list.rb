@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/knife'
-require 'chef/knife/lpar_base'
+require "chef/knife"
+require "chef/knife/lpar_base"
 
 class Chef
   class Knife
@@ -64,20 +64,20 @@ class Chef
 
       def list_lpars
         lpar_list = [
-            ui.color('LPAR ID', :bold),
-            ui.color('Type', :bold),
-            ui.color('Name', :bold),
-            ui.color('OS Version', :bold)
+            ui.color("LPAR ID", :bold),
+            ui.color("Type", :bold),
+            ui.color("Name", :bold),
+            ui.color("OS Version", :bold),
         ].flatten.compact
 
         output_column_count = lpar_list.length
 
-        Net::SSH.start(@name_args[0], 'hscroot', :password => @password) do |ssh|
+        Net::SSH.start(@name_args[0], "hscroot", :password => @password) do |ssh|
 
           command = "lssyscfg -m #{config[:virtual_server]} -F lpar_id,lpar_env,name,os_version -r lpar"
           output = run_remote_command(ssh, command)
           output.each_line do |lpar|
-            lpar.split(',').each do |field|
+            lpar.split(",").each do |field|
               lpar_list << field.chomp
             end
           end
