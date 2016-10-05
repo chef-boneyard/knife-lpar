@@ -17,8 +17,8 @@ WARNING: This code is currently a research project, experimental and provided wi
 If you would like to build the gem from source locally, please clone this repository on to your local machine and build the gem locally.
 
 ```
-    $ bundle install
-    $ bundle exec gem install
+$ bundle install
+$ bundle exec gem install
 ```
 
 ## Subcommands
