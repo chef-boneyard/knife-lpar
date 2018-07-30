@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software Inc.
+# Copyright:: Copyright (c) 2014-2016 Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/lpar_delete.rb'
+require "spec_helper"
+require "chef/knife/lpar_delete.rb"
 
 describe Chef::Knife::LparDelete do
 
@@ -28,11 +28,11 @@ describe Chef::Knife::LparDelete do
     end
   end
 
-  describe '#run' do
-    context 'by default' do
-      let(:argv) { %w[ delete serverurl -n fakename --vios fakevios --virtual-server fakevirt ] }
+  describe "#run" do
+    context "by default" do
+      let(:argv) { %w{ delete serverurl -n fakename --vios fakevios --virtual-server fakevirt } }
 
-      it 'parses argv, gets password, and deletes lpar' do
+      it "parses argv, gets password, and deletes lpar" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password)
         expect(knife).to receive(:delete_lpar)
@@ -41,41 +41,41 @@ describe Chef::Knife::LparDelete do
     end
   end
 
-  describe '#read_and_validate_params' do
-    context 'when argv is empty' do
+  describe "#read_and_validate_params" do
+    context "when argv is empty" do
       let(:argv) { [] }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the name parameter is missing' do
-      let(:argv) { %w[ delete serverurl --vios fakevios --virtual-server fakevirt ] }
+    context "when the name parameter is missing" do
+      let(:argv) { %w{ delete serverurl --vios fakevios --virtual-server fakevirt } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the vios parameter is missing' do
-      let(:argv) { %w[ delete serverurl -n fakename --virtual-server fakevirt ] }
+    context "when the vios parameter is missing" do
+      let(:argv) { %w{ delete serverurl -n fakename --virtual-server fakevirt } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the virtual-server parameter is missing' do
-      let(:argv) { %w[ delete serverurl -n fakename --vios fakevios ] }
+    context "when the virtual-server parameter is missing" do
+      let(:argv) { %w{ delete serverurl -n fakename --vios fakevios } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
@@ -90,10 +90,10 @@ describe Chef::Knife::LparDelete do
       allow(Net::SSH).to receive(:start).with("serverurl", "hscroot", :password => "testpass").and_yield(@session)
     end
 
-    context 'when lpar does not exist' do
-      let(:argv) { %w[ delete serverurl -n fakename --vios fakevios --virtual-server fakevirt ] }
+    context "when lpar does not exist" do
+      let(:argv) { %w{ delete serverurl -n fakename --vios fakevios --virtual-server fakevirt } }
 
-      it 'returns with an error since the lpar does not exist' do
+      it "returns with an error since the lpar does not exist" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password).and_return("testpass")
         expect(knife).to receive(:delete_lpar).and_call_original
@@ -103,7 +103,7 @@ describe Chef::Knife::LparDelete do
         expect { knife.run }.to raise_error(SystemExit)
       end
 
-      it 'returns with an error since the lpar exists but is not activated/running' do
+      it "returns with an error since the lpar exists but is not activated/running" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password).and_return("testpass")
         expect(knife).to receive(:delete_lpar).and_call_original
@@ -114,7 +114,7 @@ describe Chef::Knife::LparDelete do
         expect { knife.run }.to raise_error(SystemExit)
       end
 
-      it 'does things' do
+      it "does things" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password).and_return("testpass")
         expect(knife).to receive(:delete_lpar).and_call_original

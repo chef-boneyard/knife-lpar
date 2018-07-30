@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software Inc.
+# Copyright:: Copyright (c) 2014-2016 Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,16 @@
 # limitations under the License.
 #
 
-require 'io/console'
-require 'net/ssh'
+require "io/console"
+require "net/ssh"
 
 class Chef
   class Knife
     module LparBase
 
       # I hate this name but I'm not thinking of anything better right now.
-      def print_with_output(message, output=nil)
-        if output.nil? or output.empty?
+      def print_with_output(message, output = nil)
+        if output.nil? || output.empty?
           ui.info message
         else
           ui.info message + " - " + output
@@ -43,7 +43,7 @@ class Chef
             exit 1
           end
         end
-        return return_val
+        return_val
       end
 
       # quick and dirty password prompt, because I'm cool like that

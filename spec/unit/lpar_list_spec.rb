@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2014 Chef Software Inc.
+# Copyright:: Copyright (c) 2014-2016 Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
-require 'chef/knife/lpar_list.rb'
+require "spec_helper"
+require "chef/knife/lpar_list.rb"
 
 describe Chef::Knife::LparList do
 
@@ -28,11 +28,11 @@ describe Chef::Knife::LparList do
     end
   end
 
-  describe '#run' do
-    context 'by default' do
-      let(:argv) { %w[ list serverurl --virtual-server fakevirt ] }
+  describe "#run" do
+    context "by default" do
+      let(:argv) { %w{ list serverurl --virtual-server fakevirt } }
 
-      it 'parses argv, gets password, and lists lpars' do
+      it "parses argv, gets password, and lists lpars" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password)
         expect(knife).to receive(:list_lpars)
@@ -41,21 +41,21 @@ describe Chef::Knife::LparList do
     end
   end
 
-  describe '#read_and_validate_params' do
-    context 'when argv is empty' do
+  describe "#read_and_validate_params" do
+    context "when argv is empty" do
       let(:argv) { [] }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
       end
     end
 
-    context 'when the virtual-server parameter is missing' do
-      let(:argv) { %w[ list serverurl ] }
+    context "when the virtual-server parameter is missing" do
+      let(:argv) { %w{ list serverurl } }
 
-      it 'prints usage and exits' do
+      it "prints usage and exits" do
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
@@ -63,17 +63,17 @@ describe Chef::Knife::LparList do
     end
   end
 
-  describe '#list_lpars' do
+  describe "#list_lpars" do
     before(:each) do
       Chef::Knife::LparList.load_deps
       @session = double(Net::SSH)
       allow(Net::SSH).to receive(:start).with("serverurl", "hscroot", :password => "testpass").and_yield(@session)
     end
 
-    context 'listing lpars' do
-      let(:argv) { %w[ list serverurl --virtual-server fakevirt ] }
+    context "listing lpars" do
+      let(:argv) { %w{ list serverurl --virtual-server fakevirt } }
 
-      it 'lists lpars' do
+      it "lists lpars" do
 
         expect(knife).to receive(:read_and_validate_params).and_call_original
         expect(knife).to receive(:get_password).and_return("testpass")

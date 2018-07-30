@@ -1,115 +1,87 @@
 # Logical Partitions Plugin for Knife
 
-This is the official Chef plugin for managing POWER architecture
-logical partitions (LPAR).
+[![Build Status](https://travis-ci.org/chef/knife-lpar.svg?branch=master)](https://travis-ci.org/chef/knife-lpar)
 
-This plugin gives knife the ability to initialize, start and 
-destroy LPARs.
+This is the official Chef plugin for managing POWER architecture logical partitions (LPAR).
 
-For more information about LPARs and terminology, see the following:
-http://www.redbooks.ibm.com/abstracts/sg247491.html?Open
+This plugin gives knife the ability to initialize, start and destroy LPARs.
 
-WARNING: This code is currently a research project, experimental
-and provided without warranty or support!
+For more information about LPARs and terminology, see the following: <http://www.redbooks.ibm.com/abstracts/sg247491.html?Open>
 
-# Installation
+WARNING: This code is currently a research project, experimental and provided without warranty or support!
 
-## Build Locally
-If you would like to build the gem from source locally, please clone this
-repository on to your local machine and build the gem locally.
+## Installation
+
+### Build Locally
+
+If you would like to build the gem from source locally, please clone this repository on to your local machine and build the gem locally.
 
 ```
-    $ bundle install
-    $ bundle exec gem install
+$ bundle install
+$ bundle exec gem install
 ```
 
 ## Subcommands
-This plugin provides the following Knife subcommands. Specific command options
-can be found by invoking the subcommand with a `--help` flag.
 
-# Subcommands
+This plugin provides the following Knife subcommands. Specific command options can be found by invoking the subcommand with a `--help` flag.
 
-## knife lpar create HMC (options)
-Creates a new LPAR based on defaults found below. Creates a 50GB backing device (vscsi)
-with the same name as the LPAR. This is currently not configurable. Once it completes
-successfully, the LPAR is booted into SMS mode to allow for any extra manual configuration
-and OS installation.
+### knife lpar create HMC (options)
 
-*Required*
-  * `HMC`:
-    The name or IP of the Hardware Management Console (example: `hmc01.myurl.com`)
-  * `--name`:
-    The friendly name of the LPAR (example: `lpar01`)
-  * `--vios`:
-    The name of the Virtual I/O Server Partition that provides I/O services for the LPARs on the Virtual Server (example: `vios01`)
-  * `--virtual-server`:
-    The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
-  * `--disk-name`:
-    The name of the virtual ISO that has been previously loaded into your Virtual Server's Virtual Media Library to install (example: `AIX6_Disk01`)
+Creates a new LPAR based on defaults found below. Creates a 50GB backing device (vscsi) with the same name as the LPAR. This is currently not configurable. Once it completes successfully, the LPAR is booted into SMS mode to allow for any extra manual configuration and OS installation.
 
-*Optional*
+#### Required
 
-  * `--profile`:
-    The name of the profile to be used (if not specified, defaults to `--name`)
-  * `--min-mem`:
-    Minimum Memory in mb (default 1024)
-  * `--desired-mem`:
-    Desired Memory in mb (default 4096)
-  * `--max-mem`:
-    Max Memory in mb (default 16384)
-  * `--min-procs`:
-    Minimum number of allocated physical processors (default 1)
-  * `--desired-procs`:
-    Desired number of allocated physical processors (default 2)
-  * `--max-procs`:
-    Max number of allocated physical processors (default 4)
-  * `--min-proc_units`:
-    Minimum number of processor units (default 1)
-  * `--desired-proc_units`:
-    Desired number of processor units (default 2)
-  * `--max-proc_units`:
-    Max number of processor units (default 4)
+- `HMC`: The name or IP of the Hardware Management Console (example: `hmc01.myurl.com`)
+- `--name`: The friendly name of the LPAR (example: `lpar01`)
+- `--vios`: The name of the Virtual I/O Server Partition that provides I/O services for the LPARs on the Virtual Server (example: `vios01`)
+- `--virtual-server`: The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
+- `--disk-name`: The name of the virtual ISO that has been previously loaded into your Virtual Server's Virtual Media Library to install (example: `AIX6_Disk01`)
 
+#### Optional
 
-## knife lpar delete HMC (options)
-Removes a specific LPAR from a virtual server and removes any backing devices,
-logical volumes, virtual optical devices, networking devices, device VIOS mappings,
-and finally the LPAR itself.
+- `--profile`: The name of the profile to be used (if not specified, defaults to `--name`)
+- `--min-mem`: Minimum Memory in mb (default 1024)
+- `--desired-mem`: Desired Memory in mb (default 4096)
+- `--max-mem`: Max Memory in mb (default 16384)
+- `--min-procs`: Minimum number of allocated physical processors (default 1)
+- `--desired-procs`: Desired number of allocated physical processors (default 2)
+- `--max-procs`: Max number of allocated physical processors (default 4)
+- `--min-proc_units`: Minimum number of processor units (default 1)
+- `--desired-proc_units`: Desired number of processor units (default 2)
+- `--max-proc_units`: Max number of processor units (default 4)
+
+### knife lpar delete HMC (options)
+
+Removes a specific LPAR from a virtual server and removes any backing devices, logical volumes, virtual optical devices, networking devices, device VIOS mappings, and finally the LPAR itself.
 
 This requires the LPAR to be powered off.
 
-*Required*
-  * `HMC`:
-    The name or IP of the Hardware Management Console (example: `hmc01.myurl.com`)
-  * `--name`:
-    The friendly name of the LPAR (example: `lpar01`)
-  * `--vios`:
-    The name of the Virtual I/O Server Partition that provides I/O services for the LPARs on the Virtual Server (example: `vios01`)
-  * `--virtual-server`:
-    The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
+#### Required
 
-## knife lpar list HMC (options)
+- `HMC`: The name or IP of the Hardware Management Console (example: `hmc01.myurl.com`)
+- `--name`: The friendly name of the LPAR (example: `lpar01`)
+- `--vios`: The name of the Virtual I/O Server Partition that provides I/O services for the LPARs on the Virtual Server (example: `vios01`)
+- `--virtual-server`: The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
+
+### knife lpar list HMC (options)
+
 Lists all LPARs known on a virtual server.
 
-*Required*
-  * `HMC`:
-    The name or IP of the Hardware Management Console (example: `hmc01.myurl.com`)
-  * `--virtual-server`:
-    The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
+#### Required
+
+- `HMC`: The name or IP of the Hardware Management Console (example: `hmc01.myurl.com`)
+- `--virtual-server`: The name of the Physical Virtual Server that all of the Partitions are running on (example: `aixvirt01`)
 
 ## Contributing
-Please read [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## License
-Full License: [here](LICENSE)
+For information on contributing to this project see <https://github.com/chef/chef/blob/master/CONTRIBUTING.md>
 
-Knife-Lpar - a Knife plugin for LPARs
+## License and Authors
 
-Author:: Scott Hain (<shain@getchef.com>)  
+- Author:: Scott Hain ([shain@chef.io](mailto:shain@chef.io))
 
 ```text
-Copyright:: Copyright (c) 2014 Chef Software, Inc.  
-License:: Apache License, Version 2.0
+Copyright 2014-2016 Chef Software, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
