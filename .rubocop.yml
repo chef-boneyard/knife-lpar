@@ -1,0 +1,4 @@
+Lint/UselessAssignment:
+  Exclude:
+    - 'lib/chef/knife/lpar_create.rb'
+    - 'spec/unit/lpar_base_spec.rb'

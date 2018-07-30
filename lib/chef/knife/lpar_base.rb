@@ -43,7 +43,7 @@ class Chef
             exit 1
           end
         end
-        return return_val
+        return_val
       end
 
       # quick and dirty password prompt, because I'm cool like that
