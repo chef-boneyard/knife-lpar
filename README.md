@@ -1,6 +1,7 @@
 # Logical Partitions Plugin for Knife
 
 [![Build Status](https://travis-ci.org/chef/knife-lpar.svg?branch=master)](https://travis-ci.org/chef/knife-lpar)
+[![Gem Version](https://badge.fury.io/rb/knife-lpar.svg)](https://badge.fury.io/rb/knife-lpar)
 
 This is the official Chef plugin for managing POWER architecture logical partitions (LPAR).
 
