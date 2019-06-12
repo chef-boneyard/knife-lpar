@@ -3,6 +3,14 @@
 [![Build Status](https://travis-ci.org/chef/knife-lpar.svg?branch=master)](https://travis-ci.org/chef/knife-lpar)
 [![Gem Version](https://badge.fury.io/rb/knife-lpar.svg)](https://badge.fury.io/rb/knife-lpar)
 
+**Umbrella Project**: [Chef Infra](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md)
+
+**Project State**: [Deprecated](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md#deprecated)
+
+**Issues [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: None
+
+**Pull Request [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: None
+
 This is the official Chef plugin for managing POWER architecture logical partitions (LPAR).
 
 This plugin gives knife the ability to initialize, start and destroy LPARs.
